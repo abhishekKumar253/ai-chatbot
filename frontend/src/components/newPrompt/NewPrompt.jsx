@@ -6,7 +6,7 @@ import model from "../../lib/gemini";
 import Markdown from "react-markdown";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-const NewPrompt = ( data ) => {
+const NewPrompt = ({ data }) => {
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
   const [img, setImg] = useState({
@@ -24,6 +24,7 @@ const NewPrompt = ( data ) => {
       })),
     ],
     generationConfig: {
+      // maxOutputTokens: 100,
     },
   });
 
@@ -103,16 +104,16 @@ const NewPrompt = ( data ) => {
   };
 
   // IN PRODUCTION WE DON'T NEED IT
-  // const hasRun = useRef(false);
+  const hasRun = useRef(false);
 
-  // useEffect(() => {
-  //   if (!hasRun.current) {
-  //     if (data?.history?.length === 1) {
-  //       add(data.history[0].parts[0].text, true);
-  //     }
-  //   }
-  //   hasRun.current = true;
-  // }, []);
+  useEffect(() => {
+    if (!hasRun.current) {
+      if (data?.history?.length === 1) {
+        add(data.history[0].parts[0].text, true);
+      }
+    }
+    hasRun.current = true;
+  }, []);
 
   return (
     <>

@@ -6,6 +6,7 @@ import connectDB from "./db/index.js";
 import { requireAuth } from "@clerk/express";
 import Chat from "./models/chat.js";
 import UserChats  from "./models/userChats.js";
+import { clerkMiddleware } from "@clerk/express";
 
 dotenv.config();
 
@@ -14,12 +15,13 @@ const app = express();
 
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: "http://localhost:5173",
     credentials: true,
   })
 );
 
 app.use(express.json());
+app.use(clerkMiddleware());
 
 const imagekit = new ImageKit({
   urlEndpoint: process.env.IMAGE_KIT_ENDPOINT,
@@ -86,7 +88,11 @@ app.get("/api/userchats", requireAuth(), async (req, res) => {
   try {
     const userChats = await UserChats.find({ userId });
 
-    res.status(200).send(userChats[0].chats);
+    if (userChats.length > 0) {
+      res.status(200).send(userChats[0].chats);
+    } else {
+      res.status(404).send("No chats found for this user.");
+    }
   } catch (error) {
     console.log(error);
     res.status(500).send("Error getting user chats!");
@@ -131,15 +137,11 @@ app.put("/api/chats/:id", requireAuth(), async (req, res) => {
     );
     res.status(200).send(updatedChat);
   } catch (error) {
-    console.log(err);
+    console.log(error);
     res.status(500).send("Error adding conversation!");
   }
 });
 
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(401).send("Unauthenticated!");
-});
 
 app.listen(PORT, () => {
   connectDB();

@@ -17,11 +17,15 @@ const DashboardPage = () => {
         },
         body: JSON.stringify({ text }),
       });
+      if (!res.ok) throw new Error("Failed to create chat");
       return await res.json();
     },
     onSuccess: (id) => {
       queryClient.invalidateQueries({ queryKey: ["userChats"] });
       navigate(`/dashboard/chats/${id}`);
+    },
+    onError: (err) => {
+      console.log(err);
     },
   });
 
@@ -41,7 +45,7 @@ const DashboardPage = () => {
         </div>
         <div className="options">
           <div className="option">
-            <img src="/chat.png" alt="" />
+            <img src="/chat.png" alt="Create a new chat" />
             <span>Create a New Chat</span>
           </div>
           <div className="option">
