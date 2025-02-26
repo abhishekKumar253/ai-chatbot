@@ -34,7 +34,6 @@ const Homepage = () => {
             />
             <TypeAnimation
               sequence={[
-                // Same substring at the start will only be typed out once, initially
                 "Human:We produce food for Mice",
                 2000,
                 () => {
